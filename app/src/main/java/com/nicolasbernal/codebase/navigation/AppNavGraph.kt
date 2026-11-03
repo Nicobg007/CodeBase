@@ -1,5 +1,10 @@
 package com.nicolasbernal.codebase.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Assignment
@@ -78,6 +83,10 @@ fun AppNavGraph() {
             navController = navController,
             startDestination = Routes.SPLASH,
             modifier = Modifier.padding(padding),
+            enterTransition = { fadeIn(tween(250)) + slideInHorizontally(tween(250)) { it / 8 } },
+            exitTransition = { fadeOut(tween(150)) },
+            popEnterTransition = { fadeIn(tween(250)) },
+            popExitTransition = { fadeOut(tween(150)) + slideOutHorizontally(tween(250)) { it / 8 } },
         ) {
             // ---------- ESTUDIANTE ----------
             composable(Routes.SPLASH) {

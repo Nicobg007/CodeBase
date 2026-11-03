@@ -2,6 +2,7 @@ package com.nicolasbernal.codebase.ui.screens.student
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -13,8 +14,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.nicolasbernal.codebase.ui.components.ByteMascot
 import com.nicolasbernal.codebase.ui.components.CodeProgressBar
 import com.nicolasbernal.codebase.ui.components.OptionCard
 import com.nicolasbernal.codebase.ui.components.PrimaryButton
@@ -35,7 +38,14 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         CodeProgressBar(progress = 0.66f)
-        Text("¡Vamos a personalizar tu plan!", style = MaterialTheme.typography.headlineMedium)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "¡Vamos a personalizar tu plan!",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.weight(1f),
+            )
+            ByteMascot(mascotSize = 64.dp)
+        }
 
         SectionTitle("1. ¿Cuánto sabes de código?")
         levels.forEachIndexed { i, (t, s) -> OptionCard(t, level == i, { level = i }, subtitle = s) }

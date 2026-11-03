@@ -1,5 +1,10 @@
 package com.nicolasbernal.codebase.ui.screens.student
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -34,10 +39,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nicolasbernal.codebase.data.MockData
 import com.nicolasbernal.codebase.data.SessionState
+import com.nicolasbernal.codebase.ui.components.ByteMascot
+import com.nicolasbernal.codebase.ui.components.ByteMood
 import com.nicolasbernal.codebase.ui.components.CodeBlock
 import com.nicolasbernal.codebase.ui.components.CodeProgressBar
 import com.nicolasbernal.codebase.ui.components.PrimaryButton
@@ -65,6 +74,7 @@ fun ExerciseScreen(onClose: () -> Unit, onFinished: () -> Unit) {
     var correctCount by remember { mutableIntStateOf(0) }
     var mistakes by remember { mutableIntStateOf(0) }
 
+    val haptic = LocalHapticFeedback.current
     val question = questions[index]
     val isCorrect = selected == question.correctIndex
 
@@ -108,13 +118,14 @@ fun ExerciseScreen(onClose: () -> Unit, onFinished: () -> Unit) {
             }
         }
 
-        // Zona inferior: botón o panel de feedback
+        // Zona inferior: botón o panel de feedback (sube con animación)
         Column(Modifier.padding(16.dp)) {
             if (!checked) {
                 PrimaryButton(
                     "COMPROBAR",
                     enabled = selected != null,
                     onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         checked = true
                         if (!isCorrect) {
                             hearts -= 1
@@ -122,7 +133,12 @@ fun ExerciseScreen(onClose: () -> Unit, onFinished: () -> Unit) {
                         }
                     },
                 )
-            } else {
+            }
+            AnimatedVisibility(
+                visible = checked,
+                enter = slideInVertically(tween(300)) { it } + fadeIn(tween(300)),
+                exit = fadeOut(tween(100)),
+            ) {
                 FeedbackPanel(
                     correct = isCorrect,
                     explanation = question.explanation,
@@ -195,14 +211,19 @@ private fun FeedbackPanel(correct: Boolean, explanation: String, onContinue: () 
     val titleColor = if (correct) GreenDark else ErrorDark
     Column(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(bg).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(
-            if (correct) "¡Excelente trabajo!" else "¡Respuesta incorrecta!",
-            fontWeight = FontWeight.ExtraBold,
-            color = titleColor,
-        )
-        Text(explanation, color = titleColor)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ByteMascot(mascotSize = 56.dp, mood = if (correct) ByteMood.Happy else ByteMood.Sad)
+            Column(Modifier.weight(1f)) {
+                Text(
+                    if (correct) "¡Excelente trabajo!" else "¡Respuesta incorrecta!",
+                    fontWeight = FontWeight.ExtraBold,
+                    color = titleColor,
+                )
+                Text(explanation, color = titleColor)
+            }
+        }
         PrimaryButton(
             text = if (correct) "CONTINUAR" else "ENTENDIDO, CONTINUAR",
             onClick = onContinue,

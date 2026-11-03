@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.nicolasbernal.codebase.data.UserRole
+import com.nicolasbernal.codebase.ui.components.ByteMascot
 import com.nicolasbernal.codebase.ui.components.PrimaryButton
 import com.nicolasbernal.codebase.ui.components.SecondaryButton
 import com.nicolasbernal.codebase.ui.theme.BorderGray
@@ -52,7 +53,10 @@ fun LoginScreen(onLogin: (UserRole) -> Unit) {
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Inicia sesión", style = MaterialTheme.typography.headlineMedium)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Inicia sesión", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
+            ByteMascot(mascotSize = 64.dp)
+        }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             RoleChip("Soy Estudiante", role == UserRole.STUDENT, { role = UserRole.STUDENT }, Modifier.weight(1f))

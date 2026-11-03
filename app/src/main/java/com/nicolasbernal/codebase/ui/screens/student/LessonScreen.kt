@@ -18,11 +18,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.nicolasbernal.codebase.ui.components.ByteMascot
 import com.nicolasbernal.codebase.ui.components.CodeBlock
 import com.nicolasbernal.codebase.ui.components.CodeCard
 import com.nicolasbernal.codebase.ui.components.PrimaryButton
+import com.nicolasbernal.codebase.ui.components.SectionTitle
+import com.nicolasbernal.codebase.ui.theme.BlueXp
+import com.nicolasbernal.codebase.ui.theme.GreenDark
+import com.nicolasbernal.codebase.ui.theme.GreenLight
 import com.nicolasbernal.codebase.ui.theme.PurpleAccent
 import com.nicolasbernal.codebase.ui.theme.PurpleLight
+import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
 @Composable
 fun LessonScreen(onBack: () -> Unit, onContinue: () -> Unit) {
@@ -36,22 +43,42 @@ fun LessonScreen(onBack: () -> Unit, onContinue: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text("¿Cómo funciona una variable?", style = MaterialTheme.typography.headlineMedium)
-            Text(
-                "El concepto fundamental para empezar a programar en CodeBase. En Kotlin usamos val para cajas " +
-                    "fijas que no cambian y var para cajas cuyo contenido puede modificarse.",
-            )
+
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                ByteMascot(mascotSize = 64.dp)
+                CodeCard(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "En Kotlin usamos val para cajas fijas que no cambian y var para cajas " +
+                            "cuyo contenido puede modificarse.",
+                    )
+                }
+            }
+
+            SectionTitle("METÁFORA VISUAL")
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                CodeCard(Modifier.weight(1f), borderColor = GreenDark, containerColor = GreenLight.copy(alpha = 0.4f)) {
+                    Text("🔒 val", fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
+                    Text("Caja cerrada: el valor no cambia", color = TextSecondary, fontSize = 13.sp)
+                }
+                CodeCard(Modifier.weight(1f), borderColor = BlueXp) {
+                    Text("📦 var", fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
+                    Text("Caja abierta: puedes cambiarlo", color = TextSecondary, fontSize = 13.sp)
+                }
+            }
+
             CodeBlock(
                 """
                 fun main() {
                     val nombre = "Alex"
                     var puntos = 100
+                    puntos = 150
                     println("Hola Alex")
                 }
                 """.trimIndent(),
             )
             CodeCard(borderColor = PurpleAccent, containerColor = PurpleLight) {
                 Text("¡Regla de oro de Kotlin!", fontWeight = FontWeight.Bold)
-                Text("Usa siempre val por defecto y el valor no cambiará. Usa var solo cuando realmente necesites reasignarlo.")
+                Text("Usa siempre val por defecto. Usa var solo cuando realmente necesites reasignarlo.")
             }
         }
         PrimaryButton("ENTENDIDO →", onClick = onContinue, modifier = Modifier.padding(20.dp))
