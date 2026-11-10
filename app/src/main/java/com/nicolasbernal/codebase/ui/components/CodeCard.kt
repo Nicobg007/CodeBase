@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.nicolasbernal.codebase.ui.theme.BorderGray
 
-/** Tarjeta base de la app (borde gris suave, esquinas redondeadas). */
 @Composable
 fun CodeCard(
     modifier: Modifier = Modifier,

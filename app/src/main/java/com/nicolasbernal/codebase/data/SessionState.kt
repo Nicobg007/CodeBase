@@ -9,10 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import java.time.LocalDate
 
-/**
- * Estado de la app + persistencia local (SharedPreferences).
- * El progreso del alumno (XP, racha, lecciones, vidas) se guarda y sobrevive al cerrar la app.
- */
 object SessionState {
     var role by mutableStateOf(UserRole.STUDENT)
     var loggedIn by mutableStateOf(false)
@@ -31,7 +27,6 @@ object SessionState {
     var lastStudyDay by mutableLongStateOf(0L)
     var lessonsToday by mutableIntStateOf(0)
 
-    // resultado de la última lección (pantalla "Completada")
     var lastGainedXp by mutableIntStateOf(0)
     var lastAccuracy by mutableIntStateOf(100)
     var lastLessonTitle by mutableStateOf("")
@@ -66,7 +61,6 @@ object SessionState {
         lastStudyDay = p.getLong("lastStudyDay", 0L)
         lessonsToday = p.getInt("lessonsToday", 0)
 
-        // si pasó un día nuevo: reinicia "lecciones de hoy"; si faltó más de un día, se pierde la racha
         val today = LocalDate.now().toEpochDay()
         if (lastStudyDay != today) lessonsToday = 0
         if (lastStudyDay != 0L && today - lastStudyDay > 1L) streak = 0
@@ -92,7 +86,6 @@ object SessionState {
         e.apply()
     }
 
-    /** Se llama al terminar el ejercicio de una lección. */
     fun finishLesson(lessonIndex: Int, lessonTitle: String, gainedXp: Int, correct: Int, attempts: Int) {
         val today = LocalDate.now().toEpochDay()
         streak = when {
@@ -119,7 +112,6 @@ object SessionState {
         save()
     }
 
-    /** Borra el progreso del alumno (útil para repetir la demo). */
     fun resetProgress() {
         hearts = 5
         xp = 0

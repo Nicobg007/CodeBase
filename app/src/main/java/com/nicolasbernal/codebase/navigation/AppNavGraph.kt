@@ -62,7 +62,6 @@ fun AppNavGraph() {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
-    // si ya había sesión guardada, arranca directo en el home
     val startRoute = remember {
         when {
             !SessionState.loggedIn -> Routes.SPLASH
@@ -103,7 +102,6 @@ fun AppNavGraph() {
             popEnterTransition = { fadeIn(tween(250)) },
             popExitTransition = { fadeOut(tween(150)) + slideOutHorizontally(tween(250)) { it / 8 } },
         ) {
-            // ---------- ESTUDIANTE ----------
             composable(Routes.SPLASH) {
                 SplashScreen(
                     onStart = { navController.navigate(Routes.LOGIN) },
@@ -122,7 +120,7 @@ fun AppNavGraph() {
                                 popUpTo(Routes.SPLASH) { inclusive = true }
                             }
                         }
-                        SessionState.onboardingDone -> { // atajo: ya tiene cuenta
+                        SessionState.onboardingDone -> {
                             SessionState.loggedIn = true
                             SessionState.save()
                             navController.navigate(Routes.PATH) {
@@ -177,7 +175,6 @@ fun AppNavGraph() {
                 })
             }
 
-            // ---------- PROFESOR ----------
             composable(Routes.TEACHER_GROUPS) {
                 TeacherGroupsScreen(onLaunchChallenge = { navController.navigate(Routes.CREATE_CHALLENGE) })
             }

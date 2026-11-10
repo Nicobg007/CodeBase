@@ -48,7 +48,6 @@ fun StatChip(icon: ImageVector, text: String, tint: Color) {
     }
 }
 
-/** Barra superior del alumno: racha, XP y vidas (el XP sube animado). */
 @Composable
 fun TopStatsBar(streak: Int, xp: Int, hearts: Int, modifier: Modifier = Modifier) {
     val animatedXp by animateIntAsState(xp, tween(900), label = "xp")
@@ -73,7 +72,6 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     )
 }
 
-/** Etiqueta redondeada pequeña (ej. "RETO RÁPIDO", "Completado"). */
 @Composable
 fun Pill(text: String, background: Color, textColor: Color, modifier: Modifier = Modifier) {
     Text(
@@ -88,7 +86,6 @@ fun Pill(text: String, background: Color, textColor: Color, modifier: Modifier =
     )
 }
 
-/** Círculo con emoji o iniciales (avatar). */
 @Composable
 fun AvatarCircle(text: String, size: Dp = 48.dp, background: Color = GreenLight, modifier: Modifier = Modifier) {
     androidx.compose.foundation.layout.Box(
@@ -99,7 +96,6 @@ fun AvatarCircle(text: String, size: Dp = 48.dp, background: Color = GreenLight,
     }
 }
 
-/** Opción seleccionable (onboarding, tipo de ejercicio, etc.). */
 @Composable
 fun OptionCard(
     title: String,

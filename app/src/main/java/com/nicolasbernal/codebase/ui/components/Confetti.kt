@@ -21,7 +21,6 @@ import kotlin.random.Random
 
 private class Particle(val x: Float, val speed: Float, val size: Float, val color: Color, val phase: Float)
 
-/** Lluvia de confeti que cae una vez (úsalo en "Lección completada"). */
 @Composable
 fun Confetti(modifier: Modifier = Modifier) {
     val colors = listOf(GreenPrimary, PurpleAccent, OrangeStreak, BlueXp)

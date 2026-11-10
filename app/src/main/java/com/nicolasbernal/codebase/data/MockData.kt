@@ -3,7 +3,6 @@ package com.nicolasbernal.codebase.data
 object MockData {
 
     val lessons = listOf(
-        // ---------------- 1. VARIABLES ----------------
         Lesson(
             title = "Variables",
             emoji = "📦",
@@ -54,7 +53,6 @@ object MockData {
             ),
         ),
 
-        // ---------------- 2. OPERADORES ----------------
         Lesson(
             title = "Operadores",
             emoji = "➕",
@@ -96,7 +94,6 @@ object MockData {
             ),
         ),
 
-        // ---------------- 3. CONDICIONALES ----------------
         Lesson(
             title = "Condicionales",
             emoji = "🔀",
@@ -142,7 +139,6 @@ object MockData {
             ),
         ),
 
-        // ---------------- 4. CICLO FOR ----------------
         Lesson(
             title = "Ciclo For",
             emoji = "🔁",
@@ -186,7 +182,6 @@ object MockData {
             ),
         ),
 
-        // ---------------- 5. FUNCIONES ----------------
         Lesson(
             title = "Funciones",
             emoji = "⚙️",
@@ -236,7 +231,6 @@ object MockData {
         ),
     )
 
-    // ---------- Profesor ----------
     val groups = listOf(
         ClassGroup("Grupo A: Intro Kotlin", 25, 0.90f),
         ClassGroup("Grupo B: Android Básica", 24, 0.72f),

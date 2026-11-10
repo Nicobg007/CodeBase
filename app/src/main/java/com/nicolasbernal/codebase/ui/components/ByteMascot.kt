@@ -27,7 +27,6 @@ import com.nicolasbernal.codebase.ui.theme.OrangeStreak
 
 enum class ByteMood { Happy, Sad, Cool }
 
-/** Mascota Byte dibujada con Canvas (no necesita imágenes). */
 @Composable
 fun ByteMascot(
     modifier: Modifier = Modifier,
@@ -49,18 +48,13 @@ fun ByteMascot(
         val h = this.size.height
         val screen = Color(0xFF1E293B)
 
-        // antena
         drawLine(GreenDark, Offset(w * 0.5f, h * 0.2f), Offset(w * 0.5f, h * 0.07f), strokeWidth = w * 0.035f, cap = StrokeCap.Round)
         drawCircle(OrangeStreak, radius = w * 0.055f, center = Offset(w * 0.5f, h * 0.07f))
-        // orejas
         drawCircle(GreenDark, w * 0.075f, Offset(w * 0.07f, h * 0.56f))
         drawCircle(GreenDark, w * 0.075f, Offset(w * 0.93f, h * 0.56f))
-        // cuerpo (con borde inferior)
         drawRoundRect(GreenDark, Offset(w * 0.08f, h * 0.24f), Size(w * 0.84f, h * 0.72f), CornerRadius(w * 0.26f))
         drawRoundRect(GreenPrimary, Offset(w * 0.08f, h * 0.2f), Size(w * 0.84f, h * 0.72f), CornerRadius(w * 0.26f))
-        // pantalla
         drawRoundRect(screen, Offset(w * 0.18f, h * 0.32f), Size(w * 0.64f, h * 0.42f), CornerRadius(w * 0.16f))
-        // ojos
         val eyeY = h * 0.47f
         if (mood == ByteMood.Cool) {
             drawRoundRect(GreenLight, Offset(w * 0.28f, eyeY - h * 0.03f), Size(w * 0.44f, h * 0.07f), CornerRadius(w * 0.03f))
@@ -68,7 +62,6 @@ fun ByteMascot(
             drawCircle(GreenLight, w * 0.065f, Offset(w * 0.38f, eyeY))
             drawCircle(GreenLight, w * 0.065f, Offset(w * 0.62f, eyeY))
         }
-        // boca
         val stroke = Stroke(width = w * 0.032f, cap = StrokeCap.Round)
         when (mood) {
             ByteMood.Happy, ByteMood.Cool -> drawArc(
@@ -80,7 +73,6 @@ fun ByteMascot(
                 Offset(w * 0.4f, h * 0.6f), Size(w * 0.2f, h * 0.12f), style = stroke,
             )
         }
-        // brillo
         drawRoundRect(Color.White.copy(alpha = 0.25f), Offset(w * 0.16f, h * 0.25f), Size(w * 0.22f, h * 0.04f), CornerRadius(w * 0.02f))
     }
 }

@@ -37,7 +37,6 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun LessonCompleteScreen(onContinue: () -> Unit) {
-    // las tarjetas aparecen una por una
     var step by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
         repeat(3) {
@@ -82,7 +81,6 @@ fun LessonCompleteScreen(onContinue: () -> Unit) {
 
             PrimaryButton("CONTINUAR", onClick = onContinue)
         }
-        // confeti por encima de todo
         Confetti(Modifier.fillMaxSize())
     }
 }

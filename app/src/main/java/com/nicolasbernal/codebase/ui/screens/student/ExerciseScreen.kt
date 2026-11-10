@@ -67,12 +67,6 @@ import com.nicolasbernal.codebase.ui.theme.GreenLight
 import com.nicolasbernal.codebase.ui.theme.GreenPrimary
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
-/**
- * Ejercicio de una lección. Soporta dos tipos de pregunta:
- *  - CHOICE: opción múltiple
- *  - ORDER : ordenar líneas de código
- * Si fallas: panel rojo (pantalla 6b), pierdes una vida y reintentas.
- */
 @Composable
 fun ExerciseScreen(lessonIndex: Int, onClose: () -> Unit, onFinished: () -> Unit) {
     val lesson = remember(lessonIndex) { MockData.lessons[lessonIndex.coerceIn(0, MockData.lessons.lastIndex)] }
@@ -107,7 +101,6 @@ fun ExerciseScreen(lessonIndex: Int, onClose: () -> Unit, onFinished: () -> Unit
     }
 
     Column(Modifier.fillMaxSize()) {
-        // Barra superior
         Row(
             Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -123,7 +116,6 @@ fun ExerciseScreen(lessonIndex: Int, onClose: () -> Unit, onFinished: () -> Unit
             Spacer(Modifier.width(12.dp))
         }
 
-        // Pregunta + opciones
         Column(
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -158,7 +150,6 @@ fun ExerciseScreen(lessonIndex: Int, onClose: () -> Unit, onFinished: () -> Unit
             }
         }
 
-        // Zona inferior: botón o panel de feedback
         Column(Modifier.padding(16.dp)) {
             if (!checked) {
                 PrimaryButton(
@@ -202,11 +193,11 @@ fun ExerciseScreen(lessonIndex: Int, onClose: () -> Unit, onFinished: () -> Unit
                                 resetQuestion()
                             }
                         } else if (hearts <= 0) {
-                            SessionState.hearts = 5 // demo: se recargan las vidas
+                            SessionState.hearts = 5
                             SessionState.save()
                             onClose()
                         } else {
-                            resetQuestion() // reintentar la misma pregunta
+                            resetQuestion()
                         }
                     },
                 )
@@ -260,7 +251,6 @@ private fun AnswerOption(letter: String, text: String, selected: Boolean, state:
     }
 }
 
-/** Pregunta tipo "ordena el código": toca las líneas del banco para armar tu respuesta. */
 @Composable
 private fun OrderArea(
     shuffled: List<String>,

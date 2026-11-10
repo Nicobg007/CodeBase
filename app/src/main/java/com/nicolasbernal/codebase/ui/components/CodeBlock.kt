@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nicolasbernal.codebase.ui.theme.CodeBackground
 
-/** Caja oscura para mostrar código Kotlin. */
 @Composable
 fun CodeBlock(code: String, modifier: Modifier = Modifier) {
     Box(

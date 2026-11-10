@@ -24,7 +24,6 @@ import com.nicolasbernal.codebase.ui.theme.GreenLight
 import com.nicolasbernal.codebase.ui.theme.GreenPrimary
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
-/** Pestaña "Logros": se calculan solos con tu progreso real. */
 @Composable
 fun AchievementsScreen() {
     val achievements = SessionState.achievements()

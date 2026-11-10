@@ -6,10 +6,6 @@ enum class QuestionType { CHOICE, ORDER }
 
 data class PathNode(val index: Int, val title: String, val state: LessonState, val emoji: String)
 
-/**
- * CHOICE: options = respuestas, correctIndex = la correcta.
- * ORDER : options = las líneas de código YA en el orden correcto (la app las revuelve).
- */
 data class Question(
     val type: QuestionType = QuestionType.CHOICE,
     val prompt: String,

@@ -29,7 +29,6 @@ import com.nicolasbernal.codebase.ui.theme.BorderGray
 import com.nicolasbernal.codebase.ui.theme.GreenPrimary
 import com.nicolasbernal.codebase.ui.theme.TextPrimary
 
-/** Botón estilo "3D": tiene borde inferior y se hunde al presionarlo. */
 @Composable
 fun PrimaryButton(
     text: String,
@@ -67,7 +66,6 @@ fun PrimaryButton(
     }
 }
 
-/** Botón blanco con borde: "YA TENGO UNA CUENTA", "Continuar con Google"... */
 @Composable
 fun SecondaryButton(
     text: String,
