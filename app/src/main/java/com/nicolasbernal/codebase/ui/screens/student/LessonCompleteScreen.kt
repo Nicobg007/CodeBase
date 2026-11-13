@@ -1,5 +1,7 @@
 package com.nicolasbernal.codebase.ui.screens.student
 
+// atrás aquí vuelve a la ruta y no al ejercicio
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -31,14 +33,19 @@ import com.nicolasbernal.codebase.ui.components.ByteMood
 import com.nicolasbernal.codebase.ui.components.CodeCard
 import com.nicolasbernal.codebase.ui.components.Confetti
 import com.nicolasbernal.codebase.ui.components.PrimaryButton
+import com.nicolasbernal.codebase.ui.components.SoundFx
 import com.nicolasbernal.codebase.ui.theme.GreenDark
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 import kotlinx.coroutines.delay
 
 @Composable
+// pantalla 7: lección completada con confeti
 fun LessonCompleteScreen(onContinue: () -> Unit) {
+    // las tarjetas aparecen una por una
     var step by remember { mutableIntStateOf(0) }
+    BackHandler { onContinue() }
     LaunchedEffect(Unit) {
+        SoundFx.win()
         repeat(3) {
             delay(400)
             step += 1
@@ -81,11 +88,13 @@ fun LessonCompleteScreen(onContinue: () -> Unit) {
 
             PrimaryButton("CONTINUAR", onClick = onContinue)
         }
+        // el confeti va encima de todo
         Confetti(Modifier.fillMaxSize())
     }
 }
 
 @Composable
+// fila de resultado (XP, racha, precisión)
 private fun ResultRow(emoji: String, title: String, subtitle: String) {
     CodeCard {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {

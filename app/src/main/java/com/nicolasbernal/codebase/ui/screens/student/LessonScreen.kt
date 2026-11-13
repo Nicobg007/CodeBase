@@ -33,8 +33,10 @@ import com.nicolasbernal.codebase.ui.theme.PurpleLight
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
 @Composable
+// pantalla 5: teoría de la lección antes del ejercicio
 fun LessonScreen(lessonIndex: Int, onBack: () -> Unit, onContinue: () -> Unit) {
     val index = lessonIndex.coerceIn(0, MockData.lessons.lastIndex)
+    // buscamos la lección por su posición
     val lesson = MockData.lessons[index]
 
     Column(Modifier.fillMaxSize()) {
@@ -53,6 +55,7 @@ fun LessonScreen(lessonIndex: Int, onBack: () -> Unit, onContinue: () -> Unit) {
                 CodeCard(modifier = Modifier.weight(1f)) { Text(lesson.explanation) }
             }
 
+            // la metáfora de las cajas solo aplica a la primera lección
             if (index == 0) {
                 SectionTitle("METÁFORA VISUAL")
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {

@@ -25,9 +25,11 @@ import com.nicolasbernal.codebase.ui.theme.GreenLight
 import com.nicolasbernal.codebase.ui.theme.GreenPrimary
 import com.nicolasbernal.codebase.ui.theme.OrangeStreak
 
+// estados de ánimo de Byte
 enum class ByteMood { Happy, Sad, Cool }
 
 @Composable
+// la mascota se dibuja con Canvas, así no necesitamos imágenes
 fun ByteMascot(
     modifier: Modifier = Modifier,
     mascotSize: Dp = 120.dp,
@@ -35,6 +37,7 @@ fun ByteMascot(
     animate: Boolean = true,
 ) {
     val transition = rememberInfiniteTransition(label = "byte")
+    // animación de flotar arriba y abajo
     val bob by transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
@@ -48,13 +51,18 @@ fun ByteMascot(
         val h = this.size.height
         val screen = Color(0xFF1E293B)
 
+        // antena
         drawLine(GreenDark, Offset(w * 0.5f, h * 0.2f), Offset(w * 0.5f, h * 0.07f), strokeWidth = w * 0.035f, cap = StrokeCap.Round)
         drawCircle(OrangeStreak, radius = w * 0.055f, center = Offset(w * 0.5f, h * 0.07f))
+        // orejas
         drawCircle(GreenDark, w * 0.075f, Offset(w * 0.07f, h * 0.56f))
         drawCircle(GreenDark, w * 0.075f, Offset(w * 0.93f, h * 0.56f))
+        // cuerpo con una sombra abajo
         drawRoundRect(GreenDark, Offset(w * 0.08f, h * 0.24f), Size(w * 0.84f, h * 0.72f), CornerRadius(w * 0.26f))
         drawRoundRect(GreenPrimary, Offset(w * 0.08f, h * 0.2f), Size(w * 0.84f, h * 0.72f), CornerRadius(w * 0.26f))
+        // pantalla oscura de la cara
         drawRoundRect(screen, Offset(w * 0.18f, h * 0.32f), Size(w * 0.64f, h * 0.42f), CornerRadius(w * 0.16f))
+        // ojos
         val eyeY = h * 0.47f
         if (mood == ByteMood.Cool) {
             drawRoundRect(GreenLight, Offset(w * 0.28f, eyeY - h * 0.03f), Size(w * 0.44f, h * 0.07f), CornerRadius(w * 0.03f))
@@ -62,6 +70,7 @@ fun ByteMascot(
             drawCircle(GreenLight, w * 0.065f, Offset(w * 0.38f, eyeY))
             drawCircle(GreenLight, w * 0.065f, Offset(w * 0.62f, eyeY))
         }
+        // boca: sonrisa o cara triste según el ánimo
         val stroke = Stroke(width = w * 0.032f, cap = StrokeCap.Round)
         when (mood) {
             ByteMood.Happy, ByteMood.Cool -> drawArc(

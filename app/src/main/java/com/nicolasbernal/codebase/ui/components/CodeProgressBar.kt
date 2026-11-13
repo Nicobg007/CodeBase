@@ -19,12 +19,14 @@ import com.nicolasbernal.codebase.ui.theme.BorderGray
 import com.nicolasbernal.codebase.ui.theme.GreenPrimary
 
 @Composable
+// barra de progreso con animación al llenarse
 fun CodeProgressBar(
     progress: Float,
     modifier: Modifier = Modifier,
     color: Color = GreenPrimary,
     height: Dp = 10.dp,
 ) {
+    // el valor cambia suave en vez de saltar
     val animated by animateFloatAsState(progress.coerceIn(0f, 1f), tween(600), label = "progress")
     Box(
         modifier = modifier

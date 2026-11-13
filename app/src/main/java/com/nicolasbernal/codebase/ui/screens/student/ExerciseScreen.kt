@@ -1,5 +1,7 @@
 package com.nicolasbernal.codebase.ui.screens.student
 
+// el botón atrás también pregunta antes de salir
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -26,10 +28,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -48,14 +53,17 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nicolasbernal.codebase.data.Lesson
 import com.nicolasbernal.codebase.data.MockData
 import com.nicolasbernal.codebase.data.QuestionType
 import com.nicolasbernal.codebase.data.SessionState
+import com.nicolasbernal.codebase.data.TeacherState
 import com.nicolasbernal.codebase.ui.components.ByteMascot
 import com.nicolasbernal.codebase.ui.components.ByteMood
 import com.nicolasbernal.codebase.ui.components.CodeBlock
 import com.nicolasbernal.codebase.ui.components.CodeProgressBar
 import com.nicolasbernal.codebase.ui.components.PrimaryButton
+import com.nicolasbernal.codebase.ui.components.SoundFx
 import com.nicolasbernal.codebase.ui.theme.BlueXp
 import com.nicolasbernal.codebase.ui.theme.BorderGray
 import com.nicolasbernal.codebase.ui.theme.CodeBackground
@@ -68,44 +76,73 @@ import com.nicolasbernal.codebase.ui.theme.GreenPrimary
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
 @Composable
+// pantallas 6 y 6b: ejercicio con acierto o error. lessonIndex -1 es un reto del profe
 fun ExerciseScreen(lessonIndex: Int, onClose: () -> Unit, onFinished: () -> Unit) {
-    val lesson = remember(lessonIndex) { MockData.lessons[lessonIndex.coerceIn(0, MockData.lessons.lastIndex)] }
+    val challenge = TeacherState.activeChallenge
+    // en modo reto usamos la pregunta que escribió el profesor
+    val challengeMode = lessonIndex < 0 && challenge != null
+    val lesson = remember(lessonIndex) {
+        if (challengeMode && challenge != null) {
+            Lesson(
+                title = challenge.title,
+                emoji = "🎯",
+                headline = challenge.title,
+                explanation = "",
+                example = "",
+                tip = "",
+                questions = listOf(challenge.question),
+            )
+        } else {
+            MockData.lessons[lessonIndex.coerceIn(0, MockData.lessons.lastIndex)]
+        }
+    }
     val questions = lesson.questions
 
+    // pregunta actual, respuesta elegida y feedback
     var index by remember { mutableIntStateOf(0) }
     var selected by remember { mutableStateOf<Int?>(null) }
+    var typed by remember { mutableStateOf("") }
     val picked = remember { mutableStateListOf<Int>() }
     var checked by remember { mutableStateOf(false) }
     var hearts by remember { mutableIntStateOf(SessionState.hearts) }
-    var correctCount by remember { mutableIntStateOf(0) }
     var mistakes by remember { mutableIntStateOf(0) }
     var feedbackCorrect by remember { mutableStateOf(true) }
     var feedbackText by remember { mutableStateOf("") }
+    var confirmExit by remember { mutableStateOf(false) }
 
     val haptic = LocalHapticFeedback.current
     val question = questions[index]
-    val isOrder = question.type == QuestionType.ORDER
+    // revolvemos las líneas, solo se usa en las preguntas de ordenar
     val shuffled = remember(index) { shuffleDifferent(question.options) }
 
-    val isCorrect = if (isOrder) {
-        picked.size == question.options.size && picked.map { shuffled[it] } == question.options
-    } else {
-        selected == question.correctIndex
+    // cada tipo de pregunta se corrige distinto
+    val isCorrect = when (question.type) {
+        QuestionType.ORDER -> picked.size == question.options.size && picked.map { shuffled[it] } == question.options
+        QuestionType.FILL -> question.options.any { it.trim().equals(typed.trim(), ignoreCase = true) }
+        QuestionType.CHOICE -> selected == question.correctIndex
     }
-    val canCheck = if (isOrder) picked.size == question.options.size else selected != null
+    val canCheck = when (question.type) {
+        QuestionType.ORDER -> picked.size == question.options.size
+        QuestionType.FILL -> typed.isNotBlank()
+        QuestionType.CHOICE -> selected != null
+    }
 
+    // limpia la respuesta para reintentar o pasar a la siguiente
     fun resetQuestion() {
         selected = null
+        typed = ""
         picked.clear()
         checked = false
     }
+
+    BackHandler { confirmExit = true }
 
     Column(Modifier.fillMaxSize()) {
         Row(
             Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(onClick = onClose) { Icon(Icons.Default.Close, "Cerrar") }
+            IconButton(onClick = { confirmExit = true }) { Icon(Icons.Default.Close, "Cerrar") }
             CodeProgressBar(
                 progress = index.toFloat() / questions.size,
                 modifier = Modifier.weight(1f),
@@ -120,11 +157,12 @@ fun ExerciseScreen(lessonIndex: Int, onClose: () -> Unit, onFinished: () -> Unit
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            // enunciado, código y respuestas según el tipo de pregunta
             Text(question.prompt, style = MaterialTheme.typography.titleLarge)
             if (question.code.isNotBlank()) CodeBlock(question.code)
 
-            if (isOrder) {
-                OrderArea(
+            when (question.type) {
+                QuestionType.ORDER -> OrderArea(
                     shuffled = shuffled,
                     picked = picked,
                     checked = checked,
@@ -132,8 +170,16 @@ fun ExerciseScreen(lessonIndex: Int, onClose: () -> Unit, onFinished: () -> Unit
                     onPick = { picked.add(it) },
                     onUnpick = { picked.removeAt(it) },
                 )
-            } else {
-                question.options.forEachIndexed { i, text ->
+                QuestionType.FILL -> OutlinedTextField(
+                    value = typed,
+                    onValueChange = { typed = it },
+                    label = { Text("Tu respuesta") },
+                    singleLine = true,
+                    enabled = !checked,
+                    isError = checked && !feedbackCorrect,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                QuestionType.CHOICE -> question.options.forEachIndexed { i, text ->
                     AnswerOption(
                         letter = ('A' + i).toString(),
                         text = text,
@@ -156,17 +202,26 @@ fun ExerciseScreen(lessonIndex: Int, onClose: () -> Unit, onFinished: () -> Unit
                     "COMPROBAR",
                     enabled = canCheck,
                     onClick = {
+                        // vibra y suena al comprobar, si falla pierde una vida
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         feedbackCorrect = isCorrect
-                        feedbackText = question.explanation
+                        feedbackText = if (!isCorrect && question.type == QuestionType.FILL) {
+                            question.explanation + " Respuesta: " + question.options.first()
+                        } else {
+                            question.explanation
+                        }
                         checked = true
-                        if (!isCorrect) {
+                        if (isCorrect) {
+                            SoundFx.correct()
+                        } else {
+                            SoundFx.wrong()
                             hearts -= 1
                             mistakes += 1
                         }
                     },
                 )
             }
+            // el panel de feedback sube desde abajo
             AnimatedVisibility(
                 visible = checked,
                 enter = slideInVertically(tween(300)) { it } + fadeIn(tween(300)),
@@ -177,22 +232,31 @@ fun ExerciseScreen(lessonIndex: Int, onClose: () -> Unit, onFinished: () -> Unit
                     explanation = feedbackText,
                     onContinue = {
                         if (feedbackCorrect) {
-                            correctCount += 1
+                            // si era la última pregunta guardamos el progreso y vamos a la pantalla final
                             if (index == questions.lastIndex) {
                                 SessionState.hearts = hearts
-                                SessionState.finishLesson(
-                                    lessonIndex = lessonIndex,
-                                    lessonTitle = lesson.title,
-                                    gainedXp = questions.size * 15,
-                                    correct = questions.size,
-                                    attempts = questions.size + mistakes,
-                                )
+                                if (challengeMode && challenge != null) {
+                                    SessionState.finishLesson(-1, lesson.title, challenge.points, 1, 1 + mistakes)
+                                    TeacherState.completeChallenge(
+                                        SessionState.userName.ifBlank { "Estudiante" },
+                                        1 + mistakes,
+                                    )
+                                } else {
+                                    SessionState.finishLesson(
+                                        lessonIndex = lessonIndex,
+                                        lessonTitle = lesson.title,
+                                        gainedXp = questions.size * 15,
+                                        correct = questions.size,
+                                        attempts = questions.size + mistakes,
+                                    )
+                                }
                                 onFinished()
                             } else {
                                 index += 1
                                 resetQuestion()
                             }
                         } else if (hearts <= 0) {
+                            // se quedó sin vidas: las recargamos y salimos (solo para la demo)
                             SessionState.hearts = 5
                             SessionState.save()
                             onClose()
@@ -204,8 +268,25 @@ fun ExerciseScreen(lessonIndex: Int, onClose: () -> Unit, onFinished: () -> Unit
             }
         }
     }
+
+    // diálogo de confirmación para salir
+    if (confirmExit) {
+        AlertDialog(
+            onDismissRequest = { confirmExit = false },
+            title = { Text("¿Salir de la lección?") },
+            text = { Text("Perderás el progreso de este ejercicio.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmExit = false
+                    onClose()
+                }) { Text("Salir") }
+            },
+            dismissButton = { TextButton(onClick = { confirmExit = false }) { Text("Seguir") } },
+        )
+    }
 }
 
+// revuelve las líneas y se asegura de que no queden ya en orden
 private fun shuffleDifferent(lines: List<String>): List<String> {
     if (lines.size < 2) return lines
     var s = lines.shuffled()
@@ -217,9 +298,11 @@ private fun shuffleDifferent(lines: List<String>): List<String> {
     return s
 }
 
+// estado visual de una opción de respuesta
 private enum class OptionState { Idle, Correct, Wrong }
 
 @Composable
+// una opción de opción múltiple con su letra
 private fun AnswerOption(letter: String, text: String, selected: Boolean, state: OptionState, onClick: () -> Unit) {
     val border = when (state) {
         OptionState.Correct -> GreenPrimary
@@ -252,6 +335,7 @@ private fun AnswerOption(letter: String, text: String, selected: Boolean, state:
 }
 
 @Composable
+// pregunta de ordenar código: arriba tu respuesta, abajo las líneas disponibles
 private fun OrderArea(
     shuffled: List<String>,
     picked: List<Int>,
@@ -318,6 +402,7 @@ private fun OrderArea(
 }
 
 @Composable
+// panel verde o rojo con Byte y la explicación
 private fun FeedbackPanel(correct: Boolean, explanation: String, onContinue: () -> Unit) {
     val bg = if (correct) GreenLight else ErrorLight
     val titleColor = if (correct) GreenDark else ErrorDark

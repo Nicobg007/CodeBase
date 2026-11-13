@@ -19,11 +19,14 @@ import com.nicolasbernal.codebase.ui.theme.PurpleAccent
 import kotlin.math.sin
 import kotlin.random.Random
 
+// una piecita de confeti
 private class Particle(val x: Float, val speed: Float, val size: Float, val color: Color, val phase: Float)
 
 @Composable
+// confeti que cae una sola vez al completar la lección
 fun Confetti(modifier: Modifier = Modifier) {
     val colors = listOf(GreenPrimary, PurpleAccent, OrangeStreak, BlueXp)
+    // creamos 70 piezas con posición, velocidad y color al azar
     val particles = remember {
         List(70) {
             Particle(
@@ -35,9 +38,11 @@ fun Confetti(modifier: Modifier = Modifier) {
             )
         }
     }
+    // va de 0 a 1 en 3 segundos y con eso movemos todo
     val progress = remember { Animatable(0f) }
     LaunchedEffect(Unit) { progress.animateTo(1f, tween(3200, easing = LinearEasing)) }
 
+    // dibujamos cada pieza cayendo y girando
     Canvas(modifier) {
         val t = progress.value
         particles.forEach { p ->

@@ -1,9 +1,12 @@
 package com.nicolasbernal.codebase.data
 
+// datos de prueba: lecciones, módulos y listas del profesor
 object MockData {
 
+    // el orden de esta lista es el orden de la ruta
     val lessons = listOf(
         Lesson(
+            // lección 1
             title = "Variables",
             emoji = "📦",
             headline = "¿Cómo funciona una variable?",
@@ -33,10 +36,11 @@ object MockData {
                     explanation = "Kotlin suma las variables numéricas: 3 (vidas) + 2 (bonus) = 5.",
                 ),
                 Question(
-                    prompt = "¿Qué palabra clave declara una variable que NO se puede reasignar?",
+                    // en este tipo el alumno escribe la respuesta
+                    type = QuestionType.FILL,
+                    prompt = "Escribe la palabra clave que declara una variable que NO se puede reasignar",
                     code = "___ edad = 18",
-                    options = listOf("var", "val", "let", "const"),
-                    correctIndex = 1,
+                    options = listOf("val"),
                     explanation = "En Kotlin, val crea una variable de solo lectura (inmutable).",
                 ),
                 Question(
@@ -54,6 +58,7 @@ object MockData {
         ),
 
         Lesson(
+            // lección 2
             title = "Operadores",
             emoji = "➕",
             headline = "Haz cálculos con operadores",
@@ -86,6 +91,7 @@ object MockData {
                     explanation = "% devuelve el residuo: 10 = 3 × 3 + 1, así que el residuo es 1.",
                 ),
                 Question(
+                    // en este tipo las opciones van en el orden correcto y la app las revuelve
                     type = QuestionType.ORDER,
                     prompt = "Ordena el código para imprimir la suma de 4 y 5",
                     options = listOf("val x = 4", "val y = 5", "println(x + y)"),
@@ -95,6 +101,7 @@ object MockData {
         ),
 
         Lesson(
+            // lección 3
             title = "Condicionales",
             emoji = "🔀",
             headline = "Toma decisiones con if",
@@ -140,6 +147,7 @@ object MockData {
         ),
 
         Lesson(
+            // lección 4
             title = "Ciclo For",
             emoji = "🔁",
             headline = "Repite tareas con for",
@@ -183,6 +191,7 @@ object MockData {
         ),
 
         Lesson(
+            // lección 5
             title = "Funciones",
             emoji = "⚙️",
             headline = "Reutiliza código con funciones",
@@ -212,9 +221,10 @@ object MockData {
                     explanation = "doble(4) devuelve 4 * 2 = 8.",
                 ),
                 Question(
-                    prompt = "¿Qué palabra clave declara una función en Kotlin?",
-                    options = listOf("def", "function", "fun", "func"),
-                    correctIndex = 2,
+                    type = QuestionType.FILL,
+                    prompt = "Escribe la palabra clave que declara una función en Kotlin",
+                    code = "___ saludar() {\n    println(\"Hola\")\n}",
+                    options = listOf("fun"),
                     explanation = "En Kotlin las funciones se declaran con la palabra fun.",
                 ),
                 Question(
@@ -229,8 +239,235 @@ object MockData {
                 ),
             ),
         ),
+        Lesson(
+            module = 1,
+            // lección 6 (módulo 2)
+            title = "Listas",
+            emoji = "📋",
+            headline = "Guarda varios valores en una lista",
+            explanation = "Una lista guarda varios valores en orden. listOf crea una lista de solo lectura y mutableListOf una que puedes modificar. Los índices empiezan en 0.",
+            example = """
+                val frutas = listOf("pera", "uva", "kiwi")
+                println(frutas[0])
+                println(frutas.size)
+
+                val nums = mutableListOf(1, 2)
+                nums.add(3)
+                println(nums)
+            """.trimIndent(),
+            tip = "El primer elemento está en el índice 0, no en el 1.",
+            questions = listOf(
+                Question(
+                    prompt = "¿Qué imprime este código?",
+                    code = """
+                        val frutas = listOf("pera", "uva", "kiwi")
+                        println(frutas[1])
+                    """.trimIndent(),
+                    options = listOf("pera", "uva", "kiwi", "Error"),
+                    correctIndex = 1,
+                    explanation = "Los índices empiezan en 0: frutas[1] es el segundo elemento, uva.",
+                ),
+                Question(
+                    prompt = "¿Cuántos elementos tiene la lista al final?",
+                    code = """
+                        val nums = mutableListOf(1, 2)
+                        nums.add(3)
+                        println(nums.size)
+                    """.trimIndent(),
+                    options = listOf("2", "3", "4", "Error"),
+                    correctIndex = 1,
+                    explanation = "Empieza con 2 elementos y add(3) agrega uno más: 3.",
+                ),
+                Question(
+                    type = QuestionType.FILL,
+                    prompt = "Escribe la propiedad que da la cantidad de elementos de una lista",
+                    code = """
+                        val l = listOf(5, 6, 7)
+                        println(l.___)
+                    """.trimIndent(),
+                    options = listOf("size"),
+                    explanation = "size devuelve el número de elementos: aquí 3.",
+                ),
+            ),
+        ),
+
+        Lesson(
+            module = 1,
+            // lección 7
+            title = "When",
+            emoji = "🎛️",
+            headline = "Elige entre varios casos con when",
+            explanation = "when compara un valor con varios casos y ejecuta el primero que coincide. else cubre todos los demás casos.",
+            example = """
+                val dia = 2
+                val nombre = when (dia) {
+                    1 -> "Lunes"
+                    2 -> "Martes"
+                    else -> "Otro"
+                }
+                println(nombre)
+            """.trimIndent(),
+            tip = "when puede devolver un valor, así que puedes guardarlo en una variable.",
+            questions = listOf(
+                Question(
+                    prompt = "¿Qué imprime este código?",
+                    code = """
+                        val n = 3
+                        when (n) {
+                            1 -> println("uno")
+                            3 -> println("tres")
+                            else -> println("otro")
+                        }
+                    """.trimIndent(),
+                    options = listOf("uno", "tres", "otro", "Nada"),
+                    correctIndex = 1,
+                    explanation = "n vale 3, así que coincide la segunda rama: tres.",
+                ),
+                Question(
+                    type = QuestionType.FILL,
+                    prompt = "Escribe la rama que cubre los casos que no coinciden con ninguno",
+                    code = """
+                        when (x) {
+                            1 -> println("uno")
+                            ___ -> println("otro")
+                        }
+                    """.trimIndent(),
+                    options = listOf("else"),
+                    explanation = "else es la rama por defecto de when.",
+                ),
+                Question(
+                    type = QuestionType.ORDER,
+                    prompt = "Ordena el when completo",
+                    options = listOf(
+                        "val nota = 7",
+                        "when {",
+                        "    nota >= 6 -> println(\"Pasa\")",
+                        "    else -> println(\"No pasa\")",
+                        "}",
+                    ),
+                    explanation = "Se declara la nota, se abre el when, se escribe cada rama y se cierra con la llave.",
+                ),
+            ),
+        ),
+
+        Lesson(
+            module = 1,
+            // lección 8
+            title = "Clases",
+            emoji = "🧱",
+            headline = "Crea tus propios objetos con clases",
+            explanation = "Una clase es un molde para crear objetos. Define propiedades (datos) y funciones (acciones). Creas un objeto llamando a la clase como si fuera una función.",
+            example = """
+                class Perro(val nombre: String) {
+                    fun ladrar() {
+                        println(nombre + " dice guau")
+                    }
+                }
+
+                fun main() {
+                    val p = Perro("Rex")
+                    p.ladrar()
+                }
+            """.trimIndent(),
+            tip = "En Kotlin no se usa new: Perro(\"Rex\") crea el objeto directamente.",
+            questions = listOf(
+                Question(
+                    prompt = "¿Qué imprime este código?",
+                    code = """
+                        class Perro(val nombre: String)
+
+                        fun main() {
+                            val p = Perro("Rex")
+                            println(p.nombre)
+                        }
+                    """.trimIndent(),
+                    options = listOf("Perro", "Rex", "nombre", "Error"),
+                    correctIndex = 1,
+                    explanation = "p es un objeto Perro creado con el nombre Rex; p.nombre devuelve Rex.",
+                ),
+                Question(
+                    prompt = "¿Qué palabra clave declara una clase?",
+                    options = listOf("class", "object", "struct", "type"),
+                    correctIndex = 0,
+                    explanation = "Las clases se declaran con la palabra class.",
+                ),
+                Question(
+                    type = QuestionType.FILL,
+                    prompt = "Completa la declaración de la clase",
+                    code = "___ Gato(val edad: Int)",
+                    options = listOf("class"),
+                    explanation = "Se escribe class seguido del nombre y sus propiedades.",
+                ),
+            ),
+        ),
+
+        Lesson(
+            module = 1,
+            // lección 9
+            title = "Null safety",
+            emoji = "🛡️",
+            headline = "Evita errores con null safety",
+            explanation = "En Kotlin una variable normal no puede ser null. Si necesitas que lo sea, agrega ? al tipo. El operador ?. llama de forma segura y ?: da un valor por defecto.",
+            example = """
+                var nombre: String? = null
+                println(nombre?.length)
+                println(nombre ?: "Sin nombre")
+            """.trimIndent(),
+            tip = "String? admite null y String no. Así se evitan los errores de puntero nulo.",
+            questions = listOf(
+                Question(
+                    prompt = "¿Qué imprime este código?",
+                    code = """
+                        val a: String? = null
+                        println(a ?: "vacío")
+                    """.trimIndent(),
+                    options = listOf("null", "vacío", "Error", "a"),
+                    correctIndex = 1,
+                    explanation = "a es null, así que el operador ?: usa el valor por defecto: vacío.",
+                ),
+                Question(
+                    prompt = "¿Qué símbolo hace que un tipo acepte null?",
+                    options = listOf("?", "!", "*", "&"),
+                    correctIndex = 0,
+                    explanation = "String? acepta null; el signo ? marca el tipo como nulable.",
+                ),
+                Question(
+                    type = QuestionType.ORDER,
+                    prompt = "Ordena el código",
+                    options = listOf(
+                        "var texto: String? = null",
+                        "val largo = texto?.length ?: 0",
+                        "println(largo)",
+                    ),
+                    explanation = "Se declara texto como nulable, se calcula el largo con valor por defecto 0 y se imprime.",
+                ),
+            ),
+        ),
     )
 
+    // módulos de la ruta
+    val modules = listOf(
+        CourseModule("Fundamentos de Kotlin", "MÓDULO 1 · Fundamentos", "📦"),
+        CourseModule("Estructuras y Objetos", "MÓDULO 2 · Intermedio", "🧱"),
+    )
+
+    // compañeros de mentira para la liga semanal
+    val leaderboard = listOf(
+        RankEntry("Camila R.", 520),
+        RankEntry("Diego A.", 410),
+        RankEntry("Mateo G.", 320),
+        RankEntry("Lucía R.", 280),
+        RankEntry("Andrés P.", 150),
+    )
+
+    // alumnos destacados que ve el profesor
+    val topStudents = listOf(
+        RankEntry("Diego A.", 1248),
+        RankEntry("Sofía M.", 1120),
+        RankEntry("Valeria C.", 980),
+    )
+
+    // datos de prueba del profesor
     val groups = listOf(
         ClassGroup("Grupo A: Intro Kotlin", 25, 0.90f),
         ClassGroup("Grupo B: Android Básica", 24, 0.72f),

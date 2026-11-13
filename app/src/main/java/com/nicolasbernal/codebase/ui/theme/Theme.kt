@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+// paleta de Material con los colores de CodeBase
 private val CodeBaseColors = lightColorScheme(
     primary = GreenPrimary,
     onPrimary = Color.White,
@@ -21,6 +22,7 @@ private val CodeBaseColors = lightColorScheme(
     outline = BorderGray,
 )
 
+// esquinas redondeadas
 private val AppShapes = Shapes(
     small = RoundedCornerShape(8.dp),
     medium = RoundedCornerShape(16.dp),
@@ -28,6 +30,7 @@ private val AppShapes = Shapes(
 )
 
 @Composable
+// tema general, envuelve toda la app
 fun CodeBaseTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = CodeBaseColors,

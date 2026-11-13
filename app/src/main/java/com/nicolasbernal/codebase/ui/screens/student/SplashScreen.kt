@@ -29,7 +29,9 @@ import com.nicolasbernal.codebase.ui.theme.GreenDark
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
 @Composable
+// pantalla 1: bienvenida con Byte
 fun SplashScreen(onStart: () -> Unit, onHaveAccount: () -> Unit) {
+    // controla la animación de entrada
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
 
@@ -38,6 +40,7 @@ fun SplashScreen(onStart: () -> Unit, onHaveAccount: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
+        // el contenido aparece con fade y zoom
         AnimatedVisibility(
             visible = visible,
             enter = fadeIn(tween(700)) + scaleIn(tween(700), initialScale = 0.7f),

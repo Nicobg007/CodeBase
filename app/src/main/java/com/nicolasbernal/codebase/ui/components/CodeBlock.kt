@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.nicolasbernal.codebase.ui.theme.CodeBackground
 
 @Composable
+// caja oscura para mostrar código con letra monoespaciada
 fun CodeBlock(code: String, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier

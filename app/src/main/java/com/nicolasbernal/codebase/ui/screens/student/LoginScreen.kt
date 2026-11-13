@@ -46,8 +46,10 @@ import com.nicolasbernal.codebase.ui.theme.GreenPrimary
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
 @Composable
+// pantalla 2: login para estudiante o profesor
 fun LoginScreen(onLogin: (UserRole, String) -> Unit) {
     val context = LocalContext.current
+    // estados de los campos del formulario
     var role by remember { mutableStateOf(UserRole.STUDENT) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -91,10 +93,12 @@ fun LoginScreen(onLogin: (UserRole, String) -> Unit) {
             modifier = Modifier.fillMaxWidth(),
         )
 
+        // mensaje si dejan campos vacíos
         if (error) {
             Text("Escribe tu correo y contraseña para continuar.", color = ErrorRed, fontSize = 13.sp)
         }
 
+        // para la demo vale cualquier correo y contraseña, solo no pueden estar vacíos
         PrimaryButton("INGRESAR", onClick = {
             if (email.isBlank() || password.isBlank()) {
                 error = true
@@ -112,6 +116,7 @@ fun LoginScreen(onLogin: (UserRole, String) -> Unit) {
 }
 
 @Composable
+// botón para elegir si eres estudiante o profesor
 private fun RoleChip(text: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier

@@ -9,11 +9,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nicolasbernal.codebase.data.MockData
+import com.nicolasbernal.codebase.data.Submission
 import com.nicolasbernal.codebase.data.TeacherState
 import com.nicolasbernal.codebase.ui.components.AvatarCircle
 import com.nicolasbernal.codebase.ui.components.CodeCard
@@ -38,11 +44,27 @@ import com.nicolasbernal.codebase.ui.theme.GreenLight
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
 @Composable
+// pantalla de entregas de un reto
 fun SubmissionsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    var filter by remember { mutableIntStateOf(0) }
     val task = TeacherState.tasks.firstOrNull { it.title == TeacherState.selectedTask }
     val delivered = task?.delivered ?: 22
     val total = task?.total ?: 28
+    val isActiveChallenge = task != null && TeacherState.activeChallenge?.title == task.title
+    // en el reto real mostramos las entregas hechas desde la app
+    val all: List<Submission> = if (isActiveChallenge) {
+        TeacherState.liveSubmissions + MockData.submissions.filter { it.xp == null }
+    } else {
+        MockData.submissions
+    }
+
+    // aplica el filtro de arriba
+    fun keep(s: Submission): Boolean = when (filter) {
+        1 -> s.status.startsWith("Aprobado")
+        2 -> !s.status.startsWith("Aprobado")
+        else -> true
+    }
 
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -60,7 +82,13 @@ fun SubmissionsScreen(onBack: () -> Unit) {
             Text("$delivered de $total estudiantes completaron · ${delivered * 100 / total}%", color = TextSecondary)
             CodeProgressBar(delivered.toFloat() / total, color = GreenDark)
 
-            MockData.submissions.forEach { s ->
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("Todos", "Aprobados", "Pendientes").forEachIndexed { i, name ->
+                    FilterChip(selected = filter == i, onClick = { filter = i }, label = { Text(name) })
+                }
+            }
+
+            all.filter { keep(it) }.forEach { s ->
                 val bad = s.status == "Sin entrega"
                 val pending = s.status == "Pendiente"
                 CodeCard(containerColor = if (bad) ErrorLight.copy(alpha = 0.5f) else Color.White) {

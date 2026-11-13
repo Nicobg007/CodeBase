@@ -1,5 +1,6 @@
 package com.nicolasbernal.codebase.ui.screens.student
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,10 +35,14 @@ import com.nicolasbernal.codebase.ui.components.showToast
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
 @Composable
+// pestaña Perfil con estadísticas y ajustes
 fun ProfileScreen(onLogout: () -> Unit) {
     val context = LocalContext.current
     val name = SessionState.userName.ifBlank { "Estudiante" }
+    // controlan los diálogos de reiniciar y cambiar nombre
     var showReset by remember { mutableStateOf(false) }
+    var showEditName by remember { mutableStateOf(false) }
+    var draftName by remember { mutableStateOf("") }
 
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
@@ -44,7 +50,14 @@ fun ProfileScreen(onLogout: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         AvatarCircle("👩‍💻", size = 96.dp)
-        Text(name, style = MaterialTheme.typography.titleLarge)
+        Text(
+            "$name ✏️",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.clickable {
+                draftName = SessionState.userName
+                showEditName = true
+            },
+        )
         Text("@${name.lowercase().replace(" ", "_")}_code", color = TextSecondary)
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -81,10 +94,26 @@ fun ProfileScreen(onLogout: () -> Unit) {
                 )
             }
         }
+        CodeCard {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text("Efectos de sonido", fontWeight = FontWeight.Bold)
+                    Text("Al acertar y al fallar", color = TextSecondary, fontSize = 13.sp)
+                }
+                Switch(
+                    checked = SessionState.soundOn,
+                    onCheckedChange = {
+                        SessionState.soundOn = it
+                        SessionState.save()
+                    },
+                )
+            }
+        }
         SecondaryButton("REINICIAR PROGRESO", onClick = { showReset = true })
         SecondaryButton("CERRAR SESIÓN", onClick = onLogout)
     }
 
+    // confirmación antes de borrar el progreso
     if (showReset) {
         AlertDialog(
             onDismissRequest = { showReset = false },
@@ -100,9 +129,36 @@ fun ProfileScreen(onLogout: () -> Unit) {
             dismissButton = { TextButton(onClick = { showReset = false }) { Text("Cancelar") } },
         )
     }
+
+    // diálogo para cambiar el nombre
+    if (showEditName) {
+        AlertDialog(
+            onDismissRequest = { showEditName = false },
+            title = { Text("Tu nombre") },
+            text = {
+                OutlinedTextField(
+                    value = draftName,
+                    onValueChange = { draftName = it },
+                    singleLine = true,
+                    label = { Text("Nombre") },
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (draftName.isNotBlank()) {
+                        SessionState.userName = draftName.trim()
+                        SessionState.save()
+                    }
+                    showEditName = false
+                }) { Text("Guardar") }
+            },
+            dismissButton = { TextButton(onClick = { showEditName = false }) { Text("Cancelar") } },
+        )
+    }
 }
 
 @Composable
+// cajita con un número y su etiqueta
 private fun StatBox(value: String, label: String, modifier: Modifier = Modifier) {
     CodeCard(modifier = modifier) {
         Text(value, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp)

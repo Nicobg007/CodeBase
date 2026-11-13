@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.nicolasbernal.codebase.ui.theme.BorderGray
 
 @Composable
+// tarjeta base que usamos en casi todas las pantallas
 fun CodeCard(
     modifier: Modifier = Modifier,
     borderColor: Color = BorderGray,

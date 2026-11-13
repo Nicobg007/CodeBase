@@ -35,9 +35,11 @@ import com.nicolasbernal.codebase.ui.components.SectionTitle
 import com.nicolasbernal.codebase.ui.components.showToast
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
+// código para que los alumnos se unan al aula
 private const val INVITE_CODE = "KOTLIN-2025"
 
 @Composable
+// pestaña Mi cuenta
 fun TeacherAccountScreen(onLogout: () -> Unit) {
     val context = LocalContext.current
     var studentView by remember { mutableStateOf(false) }
@@ -82,11 +84,13 @@ fun TeacherAccountScreen(onLogout: () -> Unit) {
             Text("CÓDIGO DE INVITACIÓN", color = TextSecondary, fontSize = 11.sp)
             Text(INVITE_CODE, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp)
         }
+        // copia el código al portapapeles
         PrimaryButton("COPIAR CÓDIGO", onClick = {
             val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             cm.setPrimaryClip(ClipData.newPlainText("codigo", INVITE_CODE))
             showToast(context, "Código copiado: $INVITE_CODE")
         })
+        // abre el menú de compartir de Android
         SecondaryButton("COMPARTIR CÓDIGO", onClick = {
             val send = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"

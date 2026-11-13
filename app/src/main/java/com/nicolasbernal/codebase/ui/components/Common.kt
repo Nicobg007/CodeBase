@@ -41,6 +41,7 @@ import com.nicolasbernal.codebase.ui.theme.OrangeStreak
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
 @Composable
+// ícono con número, para racha, XP y vidas
 fun StatChip(icon: ImageVector, text: String, tint: Color) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
@@ -49,7 +50,9 @@ fun StatChip(icon: ImageVector, text: String, tint: Color) {
 }
 
 @Composable
+// barra de arriba del alumno
 fun TopStatsBar(streak: Int, xp: Int, hearts: Int, modifier: Modifier = Modifier) {
+    // el número de XP sube animado cuando cambia
     val animatedXp by animateIntAsState(xp, tween(900), label = "xp")
     Row(
         modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -63,6 +66,7 @@ fun TopStatsBar(streak: Int, xp: Int, hearts: Int, modifier: Modifier = Modifier
 }
 
 @Composable
+// títulos pequeños de sección
 fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
@@ -73,6 +77,7 @@ fun SectionTitle(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
+// etiqueta redondeada pequeña
 fun Pill(text: String, background: Color, textColor: Color, modifier: Modifier = Modifier) {
     Text(
         text = text,
@@ -87,6 +92,7 @@ fun Pill(text: String, background: Color, textColor: Color, modifier: Modifier =
 }
 
 @Composable
+// círculo con emoji o iniciales
 fun AvatarCircle(text: String, size: Dp = 48.dp, background: Color = GreenLight, modifier: Modifier = Modifier) {
     androidx.compose.foundation.layout.Box(
         modifier = modifier.size(size).clip(CircleShape).background(background),
@@ -97,6 +103,7 @@ fun AvatarCircle(text: String, size: Dp = 48.dp, background: Color = GreenLight,
 }
 
 @Composable
+// opción seleccionable, la usamos en el onboarding y al crear un reto
 fun OptionCard(
     title: String,
     selected: Boolean,

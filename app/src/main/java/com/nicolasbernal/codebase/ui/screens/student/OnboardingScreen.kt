@@ -25,11 +25,14 @@ import com.nicolasbernal.codebase.ui.components.PrimaryButton
 import com.nicolasbernal.codebase.ui.components.SectionTitle
 
 @Composable
+// pantalla 3: preguntas para personalizar el plan
 fun OnboardingScreen(onFinish: () -> Unit) {
+    // respuestas elegidas (posición de la opción)
     var level by remember { mutableIntStateOf(1) }
     var goal by remember { mutableIntStateOf(1) }
     var language by remember { mutableIntStateOf(0) }
 
+    // opciones de cada pregunta: título y descripción
     val levels = listOf("Nunca he programado" to "Desde absoluto cero", "Sé un poco" to "Conozco variables y lógica básica")
     val goals = listOf("5 min" to "Casual", "10 min" to "Recomendado", "15 min" to "Intenso")
     val languages = listOf("Kotlin" to "Más popular", "Android" to "Apps móviles", "Backend" to "Kotlin y APIs")
@@ -60,6 +63,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         PrimaryButton(
             "CONTINUAR",
             onClick = {
+                // guardamos la meta diaria que eligió
                 SessionState.dailyGoalMin = listOf(5, 10, 15)[goal]
                 onFinish()
             },

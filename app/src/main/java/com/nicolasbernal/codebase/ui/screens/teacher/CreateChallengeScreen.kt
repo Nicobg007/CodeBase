@@ -14,10 +14,12 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,6 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.nicolasbernal.codebase.data.Question
+import com.nicolasbernal.codebase.data.QuestionType
+import com.nicolasbernal.codebase.data.StudentChallenge
 import com.nicolasbernal.codebase.data.TeacherState
 import com.nicolasbernal.codebase.data.TeacherTask
 import com.nicolasbernal.codebase.ui.components.CodeBlock
@@ -34,17 +40,22 @@ import com.nicolasbernal.codebase.ui.components.OptionCard
 import com.nicolasbernal.codebase.ui.components.PrimaryButton
 import com.nicolasbernal.codebase.ui.components.SectionTitle
 import com.nicolasbernal.codebase.ui.components.showToast
+import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
 @Composable
+// pantalla para que el profe cree y publique un reto
 fun CreateChallengeScreen(onBack: () -> Unit, onPublish: () -> Unit) {
     val context = LocalContext.current
     val types = listOf("Predice la salida", "Completar huecos", "Escribir código libre")
 
+    // datos del reto que va escribiendo el profe
     var type by remember { mutableIntStateOf(0) }
     var title by remember { mutableStateOf("Desafío: Cajas fijas vs mutables") }
-    var topic by remember { mutableStateOf("Variables (val vs var)") }
-    var points by remember { mutableIntStateOf(50) }
+    var prompt by remember { mutableStateOf("¿Qué imprime este código?") }
+    var code by remember { mutableStateOf("val vidas = 3\nval bonus = 2\nprintln(vidas + bonus)") }
+    val options = remember { mutableStateListOf("5", "32", "6") }
     var correct by remember { mutableIntStateOf(0) }
+    var points by remember { mutableIntStateOf(50) }
 
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -60,8 +71,8 @@ fun CreateChallengeScreen(onBack: () -> Unit, onPublish: () -> Unit) {
 
             SectionTitle("Tipo de Ejercicio")
             OptionCard(types[0], type == 0, { type = 0 }, "Analiza qué imprime el código de Kotlin")
-            OptionCard(types[1], type == 1, { type = 1 }, "Rellenar con val, var o tipos de datos")
-            OptionCard(types[2], type == 2, { type = 2 }, "Mini-función evaluada por tests")
+            OptionCard(types[1], type == 1, { type = 1 }, "El alumno escribe la respuesta que falta")
+            OptionCard(types[2], type == 2, { type = 2 }, "Opción múltiple sobre un fragmento de código")
 
             SectionTitle("Detalles del Desafío")
             OutlinedTextField(
@@ -70,15 +81,33 @@ fun CreateChallengeScreen(onBack: () -> Unit, onPublish: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
-                value = topic, onValueChange = { topic = it },
-                label = { Text("Tema curricular") }, singleLine = true,
+                value = prompt, onValueChange = { prompt = it },
+                label = { Text("Pregunta para el alumno") }, singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
-            CodeBlock("val vidas = 3\nval bonus = 2\nval total = vidas + bonus\n// ¿Qué imprime println(total)?")
+            OutlinedTextField(
+                value = code, onValueChange = { code = it },
+                label = { Text("Código en Kotlin") }, minLines = 3,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            if (code.isNotBlank()) CodeBlock(code)
 
-            SectionTitle("Opciones del alumno (toca para marcar la correcta)")
-            listOf("5", "32", "6").forEachIndexed { i, text ->
-                OptionCard(text, correct == i, { correct = i }, if (correct == i) "Correcta" else "Incorrecta")
+            SectionTitle("Opciones del alumno (marca la correcta)")
+            if (type == 1) {
+                Text("El alumno escribirá el texto de la opción marcada.", color = TextSecondary, fontSize = 13.sp)
+            }
+            // cada opción tiene un radio para marcar la correcta
+            options.forEachIndexed { i, text ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(selected = correct == i, onClick = { correct = i })
+                    OutlinedTextField(
+                        value = text,
+                        onValueChange = { options[i] = it },
+                        label = { Text("Opción ${'A' + i}") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
 
             SectionTitle("Recompensa y Entrega")
@@ -92,17 +121,34 @@ fun CreateChallengeScreen(onBack: () -> Unit, onPublish: () -> Unit) {
         PrimaryButton(
             "PUBLICAR RETO AL GRUPO",
             onClick = {
-                if (title.isBlank()) {
-                    showToast(context, "Escribe un título para el reto")
+                // validamos que no haya campos vacíos
+                val cleaned = options.map { it.trim() }
+                if (title.isBlank() || prompt.isBlank() || cleaned.any { it.isBlank() }) {
+                    showToast(context, "Completa el título, la pregunta y las 3 opciones")
                 } else {
+                    val answer = cleaned[correct]
+                    // completar huecos genera una pregunta de escribir, los otros tipos de opción múltiple
+                    val question = if (type == 1) {
+                        Question(
+                            type = QuestionType.FILL,
+                            prompt = prompt.trim(),
+                            code = code,
+                            options = listOf(answer),
+                            explanation = "La respuesta correcta es $answer.",
+                        )
+                    } else {
+                        Question(
+                            prompt = prompt.trim(),
+                            code = code,
+                            options = cleaned,
+                            correctIndex = correct,
+                            explanation = "La respuesta correcta es $answer.",
+                        )
+                    }
+                    // guardamos el reto y se lo mandamos al alumno
                     TeacherState.publish(
-                        TeacherTask(
-                            title = title.trim(),
-                            subtitle = "${types[type]} · ${topic.trim()} · $points XP",
-                            delivered = 0,
-                            total = 28,
-                            badge = "NUEVO",
-                        ),
+                        TeacherTask(title.trim(), "${types[type]} · $points XP", 0, 28, "NUEVO"),
+                        StudentChallenge(title.trim(), points, question),
                     )
                     showToast(context, "¡Reto publicado! 🚀")
                     onPublish()

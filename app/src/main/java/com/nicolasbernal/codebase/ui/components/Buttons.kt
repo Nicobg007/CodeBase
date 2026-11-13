@@ -30,6 +30,7 @@ import com.nicolasbernal.codebase.ui.theme.GreenPrimary
 import com.nicolasbernal.codebase.ui.theme.TextPrimary
 
 @Composable
+// botón verde con efecto 3D: tiene un borde abajo y se hunde al presionar
 fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
@@ -40,11 +41,13 @@ fun PrimaryButton(
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
     val depth = 5.dp
+    // cuánto baja el botón mientras está presionado
     val shift by animateDpAsState(if (pressed && enabled) depth else 0.dp, tween(80), label = "press")
     val face = if (enabled) color else BorderGray
     val edge = if (enabled) lerp(color, Color.Black, 0.22f) else Color(0xFFCBD5E1)
     val shape = RoundedCornerShape(16.dp)
 
+    // capa de abajo (el borde) y capa de arriba (la cara del botón)
     Box(modifier.fillMaxWidth().height(52.dp + depth)) {
         Box(
             Modifier.fillMaxWidth().height(52.dp).align(Alignment.BottomCenter)
@@ -67,6 +70,7 @@ fun PrimaryButton(
 }
 
 @Composable
+// botón blanco con borde para acciones secundarias
 fun SecondaryButton(
     text: String,
     onClick: () -> Unit,

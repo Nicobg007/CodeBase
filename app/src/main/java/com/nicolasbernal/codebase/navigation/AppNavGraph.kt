@@ -44,12 +44,14 @@ import com.nicolasbernal.codebase.ui.screens.teacher.TeacherAccountScreen
 import com.nicolasbernal.codebase.ui.screens.teacher.TeacherGroupsScreen
 import com.nicolasbernal.codebase.ui.screens.teacher.TeacherTasksScreen
 
+// pestañas de la barra de abajo del alumno
 private val studentTabs = listOf(
     BottomTab(Routes.PATH, "Aprender", Icons.Default.Home),
     BottomTab(Routes.ACHIEVEMENTS, "Logros", Icons.Default.EmojiEvents),
     BottomTab(Routes.PROFILE, "Perfil", Icons.Default.Person),
 )
 
+// pestañas de la barra de abajo del profesor
 private val teacherTabs = listOf(
     BottomTab(Routes.TEACHER_GROUPS, "Grupos", Icons.Default.Groups),
     BottomTab(Routes.TEACHER_TASKS, "Tareas y retos", Icons.AutoMirrored.Filled.Assignment),
@@ -57,11 +59,13 @@ private val teacherTabs = listOf(
 )
 
 @Composable
+// aquí se define toda la navegación de la app
 fun AppNavGraph() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
+    // si ya había sesión guardada entramos directo al home
     val startRoute = remember {
         when {
             !SessionState.loggedIn -> Routes.SPLASH
@@ -70,12 +74,14 @@ fun AppNavGraph() {
         }
     }
 
+    // la barra de abajo solo sale en las pantallas principales
     val tabs = when (currentRoute) {
         in Routes.studentTabRoutes -> studentTabs
         in Routes.teacherTabRoutes -> teacherTabs
         else -> null
     }
 
+    // cambiar de pestaña sin apilar pantallas repetidas
     fun goToTab(route: String) {
         val root = tabs?.first()?.route ?: return
         navController.navigate(route) {
@@ -85,6 +91,7 @@ fun AppNavGraph() {
         }
     }
 
+    // argumento con el número de la lección
     val lessonArg = listOf(navArgument("lessonId") { type = NavType.IntType })
 
     Scaffold(
@@ -97,11 +104,13 @@ fun AppNavGraph() {
             navController = navController,
             startDestination = startRoute,
             modifier = Modifier.padding(padding),
+            // animaciones al cambiar de pantalla
             enterTransition = { fadeIn(tween(250)) + slideInHorizontally(tween(250)) { it / 8 } },
             exitTransition = { fadeOut(tween(150)) },
             popEnterTransition = { fadeIn(tween(250)) },
             popExitTransition = { fadeOut(tween(150)) + slideOutHorizontally(tween(250)) { it / 8 } },
         ) {
+            // ----- pantallas del estudiante -----
             composable(Routes.SPLASH) {
                 SplashScreen(
                     onStart = { navController.navigate(Routes.LOGIN) },
@@ -120,6 +129,7 @@ fun AppNavGraph() {
                                 popUpTo(Routes.SPLASH) { inclusive = true }
                             }
                         }
+                        // atajo: si ya hizo el onboarding lo saltamos
                         SessionState.onboardingDone -> {
                             SessionState.loggedIn = true
                             SessionState.save()
@@ -142,7 +152,11 @@ fun AppNavGraph() {
                 })
             }
             composable(Routes.PATH) {
-                PathScreen(onOpenLesson = { id -> navController.navigate(Routes.lesson(id)) })
+                PathScreen(
+                    onOpenLesson = { id -> navController.navigate(Routes.lesson(id)) },
+                    // -1 indica que es el reto del profe y no una lección
+                    onOpenChallenge = { navController.navigate(Routes.exercise(-1)) },
+                )
             }
             composable(Routes.LESSON, arguments = lessonArg) { entry ->
                 val id = entry.arguments?.getInt("lessonId") ?: 0
@@ -161,6 +175,7 @@ fun AppNavGraph() {
                 )
             }
             composable(Routes.COMPLETE) {
+                // al continuar volvemos a la ruta
                 LessonCompleteScreen(onContinue = {
                     navController.popBackStack(Routes.PATH, inclusive = false)
                 })
@@ -168,6 +183,7 @@ fun AppNavGraph() {
             composable(Routes.ACHIEVEMENTS) { AchievementsScreen() }
             composable(Routes.PROFILE) {
                 ProfileScreen(onLogout = {
+                    // cerramos sesión y volvemos al inicio
                     SessionState.logout()
                     navController.navigate(Routes.SPLASH) {
                         popUpTo(Routes.PATH) { inclusive = true }
@@ -175,6 +191,7 @@ fun AppNavGraph() {
                 })
             }
 
+            // ----- pantallas del profesor -----
             composable(Routes.TEACHER_GROUPS) {
                 TeacherGroupsScreen(onLaunchChallenge = { navController.navigate(Routes.CREATE_CHALLENGE) })
             }
@@ -198,6 +215,7 @@ fun AppNavGraph() {
             composable(Routes.CREATE_CHALLENGE) {
                 CreateChallengeScreen(
                     onBack = { navController.popBackStack() },
+                    // al publicar volvemos a la lista de tareas
                     onPublish = {
                         navController.navigate(Routes.TEACHER_TASKS) {
                             popUpTo(Routes.TEACHER_GROUPS)

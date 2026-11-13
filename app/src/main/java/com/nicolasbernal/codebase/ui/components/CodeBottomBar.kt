@@ -12,9 +12,11 @@ import com.nicolasbernal.codebase.ui.theme.GreenDark
 import com.nicolasbernal.codebase.ui.theme.GreenLight
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
+// cada pestaña tiene ruta, texto e ícono
 data class BottomTab(val route: String, val label: String, val icon: ImageVector)
 
 @Composable
+// barra de navegación de abajo
 fun CodeBottomBar(tabs: List<BottomTab>, currentRoute: String?, onSelect: (String) -> Unit) {
     NavigationBar(containerColor = Color.White) {
         tabs.forEach { tab ->

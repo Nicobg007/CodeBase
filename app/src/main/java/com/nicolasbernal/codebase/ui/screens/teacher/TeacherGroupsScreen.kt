@@ -33,8 +33,10 @@ import com.nicolasbernal.codebase.ui.theme.PurpleAccent
 import com.nicolasbernal.codebase.ui.theme.TextSecondary
 
 @Composable
+// pestaña Grupos: panel del profesor
 fun TeacherGroupsScreen(onLaunchChallenge: () -> Unit) {
     val context = LocalContext.current
+    // el nombre sale del correo con el que entró
     val teacherName = SessionState.userName.ifBlank { "Carlos" }
 
     Column(
@@ -44,6 +46,7 @@ fun TeacherGroupsScreen(onLaunchChallenge: () -> Unit) {
         Text("¡Hola, Prof. $teacherName! 👋", style = MaterialTheme.typography.headlineMedium)
 
         SectionTitle("MIS AULAS ASIGNADAS")
+        // tarjeta de cada grupo con su avance
         MockData.groups.forEach { g ->
             CodeCard(onClick = { showToast(context, "Abriendo ${g.name}…") }) {
                 Text(g.name, fontWeight = FontWeight.Bold)
@@ -58,7 +61,19 @@ fun TeacherGroupsScreen(onLaunchChallenge: () -> Unit) {
             Metric("88%", "APROBACIÓN", Modifier.weight(1f))
         }
 
+        SectionTitle("ALUMNOS MÁS DESTACADOS")
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MockData.topStudents.forEachIndexed { i, student ->
+                CodeCard(Modifier.weight(1f)) {
+                    Text(listOf("🥇", "🥈", "🥉")[i], fontSize = 24.sp)
+                    Text(student.name, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                    Text("${student.xp} XP", color = TextSecondary, fontSize = 12.sp)
+                }
+            }
+        }
+
         SectionTitle("APOYO REQUERIDO (toca para enviar ayuda)")
+        // alumnos que necesitan ayuda, al tocarlos se les manda una pista
         MockData.alerts.forEach { a ->
             CodeCard(
                 borderColor = ErrorRed.copy(alpha = 0.4f),
@@ -85,6 +100,7 @@ fun TeacherGroupsScreen(onLaunchChallenge: () -> Unit) {
 }
 
 @Composable
+// tarjeta de métrica
 private fun Metric(value: String, label: String, modifier: Modifier = Modifier) {
     CodeCard(modifier = modifier) {
         Text(value, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp)
